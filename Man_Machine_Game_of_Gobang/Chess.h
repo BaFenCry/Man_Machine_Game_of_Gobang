@@ -46,6 +46,7 @@ private:
 	bool playerFlag; //true:黑子走，false：白子走
 	//更新游戏数据
 	void updateGameMap(ChessPos* pos);
+	ChessPos lastPos;
 
 };
 

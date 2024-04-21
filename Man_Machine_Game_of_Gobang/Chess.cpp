@@ -59,7 +59,7 @@ bool Chess::clickBoard(int x, int y, ChessPos* pos)
 		if (len < offset && chessMap[p[i].row][p[i].col]==0) {
 			pos->row = p[i].row;
 			pos->col = p[i].col;
-			cout << pos->row << " " << pos->col << endl;
+			//cout << pos->row << " " << pos->col << endl;
 			return true;
 		}
 	}
@@ -68,6 +68,7 @@ bool Chess::clickBoard(int x, int y, ChessPos* pos)
 
 void Chess::chessDown(ChessPos* pos)
 {
+	mciSendString("play res/down7.wav", 0, 0, 0);
 	int x = margin_x + pos->col * chessSize;
 	int y = margin_y + pos->row * chessSize;
 	IMAGE* img;
@@ -107,12 +108,67 @@ bool Chess::checkOver()
 
 bool Chess::checkWin()
 {
-	
+	int row = lastPos.row;
+	int col = lastPos.col;
+
+	for (int i = 0; i < 5; i++)
+	{
+		// 水平方向
+		if (col - i >= 0 &&
+			col - i + 4 < gradeSize &&
+			chessMap[row][col - i] == chessMap[row][col - i + 1] &&
+			chessMap[row][col - i] == chessMap[row][col - i + 2] &&
+			chessMap[row][col - i] == chessMap[row][col - i + 3] &&
+			chessMap[row][col - i] == chessMap[row][col - i + 4])
+			return true;
+	}
+
+	// 竖直方向
+	for (int i = 0; i < 5; i++)
+	{
+		if (row - i >= 0 &&
+			row - i + 4 < gradeSize &&
+			chessMap[row - i][col] == chessMap[row - i + 1][col] &&
+			chessMap[row - i][col] == chessMap[row - i + 2][col] &&
+			chessMap[row - i][col] == chessMap[row - i + 3][col] &&
+			chessMap[row - i][col] == chessMap[row - i + 4][col])
+			return true;
+	}
+
+	// 左下到右上
+	for (int i = 0; i < 5; i++)
+	{
+		if (row + i < gradeSize &&
+			row + i - 4 >= 0 &&
+			col - i >= 0 &&
+			col - i + 4 < gradeSize &&
+			chessMap[row + i][col - i] == chessMap[row + i - 1][col - i + 1] &&
+			chessMap[row + i][col - i] == chessMap[row + i - 2][col - i + 2] &&
+			chessMap[row + i][col - i] == chessMap[row + i - 3][col - i + 3] &&
+			chessMap[row + i][col - i] == chessMap[row + i - 4][col - i + 4])
+			return true;
+	}
+
+	// 左上到右下
+	for (int i = 0; i < 5; i++)
+	{
+		if (row - i >= 0 &&
+			row - i + 4 < gradeSize &&
+			col - i >= 0 &&
+			col - i + 4 < gradeSize &&
+			chessMap[row - i][col - i] == chessMap[row - i + 1][col - i + 1] &&
+			chessMap[row - i][col - i] == chessMap[row - i + 2][col - i + 2] &&
+			chessMap[row - i][col - i] == chessMap[row - i + 3][col - i + 3] &&
+			chessMap[row - i][col - i] == chessMap[row - i + 4][col - i + 4])
+			return true;
+	}
+
 	return false;
 }
 
 void Chess::updateGameMap(ChessPos* pos)
 {
+	lastPos = *pos;
 	chessMap[pos->row][pos->col] = playerFlag ? CHESS_BLACK : CHESS_WHITE;
 	playerFlag = !playerFlag; //交换走棋执行权
 }
